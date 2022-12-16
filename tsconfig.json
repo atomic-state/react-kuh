@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "./",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es5",
+    "strict": false,
+    "lib": ["es6", "dom", "es2019"],
+    "allowJs": false,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "declaration": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

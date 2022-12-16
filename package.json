@@ -1,0 +1,9 @@
+{
+  "name": "react-kuh",
+  "version": "0.0.1",
+  "description": "Some React kinda useful hooks",
+  "main": "index.js",
+  "keywords": [],
+  "author": "danybeltran",
+  "license": "MIT"
+}
