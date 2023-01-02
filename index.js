@@ -63,6 +63,9 @@ function useBoolean(initialValue) {
         on: function () {
             setState(true);
         },
+        set: function (v) {
+            setState(v);
+        },
         reset: function () {
             setState(initialValue);
         },

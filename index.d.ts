@@ -6,6 +6,7 @@ export declare function useBoolean(initialValue?: boolean | null): [boolean, {
     toggle(): void;
     off(): void;
     on(): void;
+    set(v: boolean): void;
     reset(): void;
 }];
 export declare function useObject<T = any>(initialValue: T): [T, {

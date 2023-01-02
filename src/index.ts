@@ -58,6 +58,9 @@ export function useBoolean(initialValue: boolean | null = null as any) {
     on() {
       setState(true)
     },
+    set(v: boolean) {
+      setState(v)
+    },
     reset() {
       setState(initialValue)
     },
@@ -69,6 +72,7 @@ export function useBoolean(initialValue: boolean | null = null as any) {
       toggle(): void
       off(): void
       on(): void
+      set(v: boolean): void
       reset(): void
     }
   ]
