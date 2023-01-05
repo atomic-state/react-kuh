@@ -134,7 +134,7 @@ export function useSecondRender(): boolean {
 
 const browserLoaded: any = {}
 
-export function SecondRender({ children }: any) {
+export function BrowserOnly({ children }: any) {
   const ready = useSecondRender()
   if (!ready && !browserLoaded.loaded) return null
   browserLoaded.loaded = true

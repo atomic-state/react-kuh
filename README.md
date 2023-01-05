@@ -93,3 +93,30 @@ function App() {
   )
 }
 ```
+
+
+#### `useSecondRender`
+
+Returns `true` after the first render
+
+
+#### `SecondRender` (component)
+
+This component renders its children after the first render. This can be used as a boundary when using SSR and a component should only be rendered in the client.
+
+Usage
+
+```jsx
+import { BrowserOnly } = from 'react-kuh'
+
+export default function Page(){
+  return (
+    <div>
+      <h2>This is SSR</h2>
+      <BrowserOnly>
+        <p>This is not SSR</p>
+      </BrowserOnly>
+    </div>
+  )
+}
+```
