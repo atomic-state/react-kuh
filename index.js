@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFirstRender = exports.useObject = exports.useBoolean = exports.useWindowSize = void 0;
+exports.SecondRender = exports.useSecondRender = exports.useObject = exports.useBoolean = exports.useWindowSize = void 0;
 var react_1 = require("react");
 function useWindowSize() {
     var _a = (0, react_1.useState)({
@@ -96,11 +96,21 @@ exports.useObject = useObject;
 /**
  * Returns `true` after the component mounts/hydrates (after the first render)
  */
-function useFirstRender() {
+function useSecondRender() {
     var _a = (0, react_1.useState)(false), firstRender = _a[0], setFirstRender = _a[1];
     (0, react_1.useEffect)(function () {
         setFirstRender(true);
     }, []);
     return firstRender;
 }
-exports.useFirstRender = useFirstRender;
+exports.useSecondRender = useSecondRender;
+var browserLoaded = {};
+function SecondRender(_a) {
+    var children = _a.children;
+    var ready = useSecondRender();
+    if (!ready && !browserLoaded.loaded)
+        return null;
+    browserLoaded.loaded = true;
+    return children;
+}
+exports.SecondRender = SecondRender;

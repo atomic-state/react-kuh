@@ -122,7 +122,7 @@ export function useObject<T = any>(initialValue: T) {
 /**
  * Returns `true` after the component mounts/hydrates (after the first render)
  */
-export function useFirstRender(): boolean {
+export function useSecondRender(): boolean {
   const [firstRender, setFirstRender] = useState(false)
 
   useEffect(() => {
@@ -130,4 +130,13 @@ export function useFirstRender(): boolean {
   }, [])
 
   return firstRender
+}
+
+const browserLoaded: any = {}
+
+export function SecondRender({ children }: any) {
+  const ready = useSecondRender()
+  if (!ready && !browserLoaded.loaded) return null
+  browserLoaded.loaded = true
+  return children
 }

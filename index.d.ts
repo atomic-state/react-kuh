@@ -20,4 +20,5 @@ export declare function useObject<T = any>(initialValue: T): [T, {
 /**
  * Returns `true` after the component mounts/hydrates (after the first render)
  */
-export declare function useFirstRender(): boolean;
+export declare function useSecondRender(): boolean;
+export declare function SecondRender({ children }: any): any;
