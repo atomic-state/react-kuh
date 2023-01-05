@@ -118,3 +118,16 @@ export function useObject<T = any>(initialValue: T) {
 
   return end
 }
+
+/**
+ * Returns `true` after the component mounts/hydrates (after the first render)
+ */
+export function useFirstRender(): boolean {
+  const [firstRender, setFirstRender] = useState(false)
+
+  useEffect(() => {
+    setFirstRender(true)
+  }, [])
+
+  return firstRender
+}

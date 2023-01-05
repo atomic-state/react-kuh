@@ -17,3 +17,7 @@ export declare function useObject<T = any>(initialValue: T): [T, {
      */
     reset(): void;
 }];
+/**
+ * Returns `true` after the component mounts/hydrates (after the first render)
+ */
+export declare function useFirstRender(): boolean;
