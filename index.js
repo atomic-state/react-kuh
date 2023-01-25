@@ -1,3 +1,4 @@
+"use client";
 "use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -104,13 +105,17 @@ function useSecondRender() {
     return firstRender;
 }
 exports.useSecondRender = useSecondRender;
-var browserLoaded = {};
+var isServer;
 function BrowserOnly(_a) {
     var children = _a.children;
-    var ready = useSecondRender();
-    if (!ready && !browserLoaded.loaded)
-        return null;
-    browserLoaded.loaded = true;
-    return children;
+    var _b = (0, react_1.useState)(typeof isServer !== "undefined" ? isServer : true), ssr = _b[0], setSSR = _b[1];
+    (0, react_1.useEffect)(function () {
+        if (typeof isServer === "undefined") {
+            setSSR(false);
+            isServer = false;
+        }
+    }, []);
+    // This will render the fallback in the server
+    return (ssr ? null : children);
 }
 exports.BrowserOnly = BrowserOnly;

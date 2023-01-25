@@ -1,3 +1,4 @@
+import React from "react";
 export declare function useWindowSize(): {
     width: number;
     height: number;
@@ -21,4 +22,6 @@ export declare function useObject<T = any>(initialValue: T): [T, {
  * Returns `true` after the component mounts/hydrates (after the first render)
  */
 export declare function useSecondRender(): boolean;
-export declare function BrowserOnly({ children }: any): any;
+export declare function BrowserOnly({ children }: {
+    children?: React.ReactNode;
+}): JSX.Element;

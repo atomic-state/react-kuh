@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react"
+"use client"
+import React, { useState, useEffect } from "react"
 
 export function useWindowSize() {
   const [size, setSize] = useState({
@@ -132,11 +133,20 @@ export function useSecondRender(): boolean {
   return firstRender
 }
 
-const browserLoaded: any = {}
+let isServer: boolean
 
-export function BrowserOnly({ children }: any) {
-  const ready = useSecondRender()
-  if (!ready && !browserLoaded.loaded) return null
-  browserLoaded.loaded = true
-  return children
+export function BrowserOnly({ children }: { children?: React.ReactNode }) {
+  const [ssr, setSSR] = useState(
+    typeof isServer !== "undefined" ? isServer : true
+  )
+
+  useEffect(() => {
+    if (typeof isServer === "undefined") {
+      setSSR(false)
+      isServer = false
+    }
+  }, [])
+
+  // This will render the fallback in the server
+  return (ssr ? null : children) as JSX.Element
 }
