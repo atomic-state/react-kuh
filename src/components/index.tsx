@@ -23,5 +23,5 @@ export function BrowserOnly({ children }: { children?: React.ReactNode }) {
  * This can be used inside server components to wrap client only components
  */
 export function ClientOnly({ children }: { children: React.ReactNode }) {
-  return children
+  return children as JSX.Element
 }
