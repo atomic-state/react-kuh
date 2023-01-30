@@ -100,7 +100,7 @@ function App() {
 Returns `true` after the first render
 
 
-#### `SecondRender` (component)
+#### `BrowserOnly` (component)
 
 This component renders its children after the first render. This can be used as a boundary when using SSR and a component should only be rendered in the client.
 
@@ -115,6 +115,28 @@ export default function Page(){
       <h2>This is SSR</h2>
       <BrowserOnly>
         <p>This is not SSR</p>
+      </BrowserOnly>
+    </div>
+  )
+}
+```
+
+#### `ClientOnly` (component)
+
+This component renders its children as they are passed to it, this component has the `use client` directive at the top so it can be used in Next.js's server components to wrap client-only components as well as server components.
+
+Usage
+
+```jsx
+import { ClientOnly } = from 'react-kuh'
+
+export default function Page(){
+  return (
+    <div>
+      <SomeServerComponent/>
+      <BrowserOnly>
+        <AnotherServerComponent/>
+        <SomeClientComponent/>
       </BrowserOnly>
     </div>
   )
