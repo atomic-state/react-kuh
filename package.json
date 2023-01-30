@@ -1,6 +1,6 @@
 {
   "name": "react-kuh",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Some React kinda useful hooks and components",
   "main": "dist/index.js",
   "keywords": [],
