@@ -25,3 +25,12 @@ export function BrowserOnly({ children }: { children?: React.ReactNode }) {
 export function ClientOnly({ children }: { children: React.ReactNode }) {
   return children as JSX.Element
 }
+
+export function WithLayout({ Component, pageProps, layoutProps }: any) {
+  const Layout = (Component as any).Layout || (({ children }: any) => children)
+  return (
+    <Layout {...layoutProps}>
+      <Component {...pageProps} />
+    </Layout>
+  )
+}
