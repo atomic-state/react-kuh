@@ -59,7 +59,13 @@ export function useBoolean(initialValue: boolean | null = null as any) {
     on() {
       setState(true)
     },
+    /**
+     * @deprecated Use `setValue` instead
+     */
     set(v: boolean) {
+      setState(v)
+    },
+    setValue(v: boolean) {
       setState(v)
     },
     reset() {
@@ -119,13 +125,6 @@ export function useObject<T = any>(initialValue: T) {
   const end = [state, actions, setState] as const
 
   return end
-}
-
-function useE() {
-  const [state, actions] = useObject({
-    name: "dany",
-    email: "",
-  })
 }
 
 /**

@@ -44,19 +44,36 @@ function SSRSuspense({ fallback, children }: any) {
   return ssr ? fallback : <Suspense fallback={fallback}>{children}</Suspense>
 }
 
-export default function WithLayout({
+export function WithLayout<L>({
   Component,
   pageProps,
   layoutProps,
   loadingProps,
-}: any) {
-  const Layout = Component.Layout || (({ children }: any) => children)
-  const Loading = Component.Loading || (() => null)
+  defaultLayout = ({ children }: any) => children,
+  defaultLoading = () => null,
+  showLayout = true,
+  showLoading = true,
+}: {
+  Component?: any
+  pageProps?: any
+  layoutProps?: any
+  loadingProps?: any
+  defaultLayout?: any
+  defaultLoading?: any
+  showLayout?: boolean
+  showLoading?: boolean
+}) {
+  const Layout = Component.Layout || defaultLayout
+  const Loading = Component.Loading || defaultLoading
+
+  const SLayout = showLayout ? Layout : ({ children }: any) => children
+  const SLoading = showLoading ? Loading : () => null
+
   return (
-    <Layout {...{ ...layoutProps, Component }}>
-      <SSRSuspense fallback={<Loading {...{ ...loadingProps, Component }} />}>
+    <SLayout {...{ ...layoutProps, Component }}>
+      <SSRSuspense fallback={<SLoading {...{ ...loadingProps, Component }} />}>
         <Component {...pageProps} />
       </SSRSuspense>
-    </Layout>
+    </SLayout>
   )
 }
