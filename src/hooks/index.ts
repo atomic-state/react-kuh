@@ -47,7 +47,7 @@ export function useWindowSize() {
 }
 
 export function useBoolean(initialValue: boolean | null = null as any) {
-  const [state, setState] = useState<boolean>(initialValue)
+  const [state, setState] = useState<boolean>(initialValue as boolean)
 
   const actions = {
     toggle() {
@@ -63,20 +63,11 @@ export function useBoolean(initialValue: boolean | null = null as any) {
       setState(v)
     },
     reset() {
-      setState(initialValue)
+      setState(initialValue as boolean)
     },
   }
 
-  const end = [state, actions] as [
-    boolean,
-    {
-      toggle(): void
-      off(): void
-      on(): void
-      set(v: boolean): void
-      reset(): void
-    }
-  ]
+  const end = [state, actions] as const
 
   return end
 }
@@ -85,6 +76,9 @@ export function useObject<T = any>(initialValue: T) {
   const [state, setState] = useState<T>(initialValue)
 
   const actions = {
+    /**
+     * @deprecated Use `setPartialValue` instead
+     */
     write(f: Partial<T> | ((e: T) => Partial<T>)) {
       const n = (
         typeof f === "function" ? (f as any)(state) : { ...state, ...f }
@@ -95,29 +89,43 @@ export function useObject<T = any>(initialValue: T) {
         ...n,
       }))
     },
+    /**
+     * @deprecated Use `setValue` instead
+     */
     replace(f: T | ((e: T) => T)) {
       const n = typeof f === "function" ? (f as any)(state) : f
       setState(n)
     },
 
+    setPartialValue(f: Partial<T> | ((e: T) => Partial<T>)) {
+      const n = (
+        typeof f === "function" ? (f as any)(state) : { ...state, ...f }
+      ) as T
+
+      setState((s) => ({
+        ...s,
+        ...n,
+      }))
+    },
+    setValue(f: T | ((e: T) => T)) {
+      const n = typeof f === "function" ? (f as any)(state) : f
+      setState(n)
+    },
     reset() {
       setState(initialValue)
     },
   }
 
-  const end = [state, actions] as [
-    T,
-    {
-      write(f: Partial<T> | ((e: T) => Partial<T>)): void
-      replace(f: T | ((e: T) => T)): void
-      /**
-       * Reset to initial value
-       */
-      reset(): void
-    }
-  ]
+  const end = [state, actions, setState] as const
 
   return end
+}
+
+function useE() {
+  const [state, actions] = useObject({
+    name: "dany",
+    email: "",
+  })
 }
 
 /**
