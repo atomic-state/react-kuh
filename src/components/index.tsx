@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from "react"
+import React, { Suspense, useState, useEffect } from "react"
 
 let isServer: boolean
 
@@ -26,11 +26,37 @@ export function ClientOnly({ children }: { children: React.ReactNode }) {
   return children as JSX.Element
 }
 
-export function WithLayout({ Component, pageProps, layoutProps }: any) {
-  const Layout = (Component as any).Layout || (({ children }: any) => children)
+/**
+ * For Next.js pages router
+ */
+
+let isServer__layout = true
+
+function SSRSuspense({ fallback, children }: any) {
+  const [ssr, setSSR] = useState(isServer__layout)
+
+  useEffect(() => {
+    setSSR(false)
+    isServer__layout = false
+  }, [])
+
+  // This will render the fallback in the server
+  return ssr ? fallback : <Suspense fallback={fallback}>{children}</Suspense>
+}
+
+export default function WithLayout({
+  Component,
+  pageProps,
+  layoutProps,
+  loadingProps,
+}: any) {
+  const Layout = Component.Layout || (({ children }: any) => children)
+  const Loading = Component.Loading || (() => null)
   return (
-    <Layout {...layoutProps}>
-      <Component {...pageProps} />
+    <Layout {...{ ...layoutProps, Component }}>
+      <SSRSuspense fallback={<Loading {...{ ...loadingProps, Component }} />}>
+        <Component {...pageProps} />
+      </SSRSuspense>
     </Layout>
   )
 }
