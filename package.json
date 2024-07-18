@@ -1,9 +1,12 @@
 {
   "name": "react-kuh",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Some React kinda useful hooks and components",
   "main": "dist/index.js",
   "keywords": [],
   "author": "danybeltran",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^18.3.3"
+  }
 }
