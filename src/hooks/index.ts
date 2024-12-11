@@ -51,7 +51,7 @@ export function useBoolean(initialValue: boolean | null = null as any) {
 
   const actions = {
     toggle() {
-      setState((s) => !s)
+      setState((previousState) => !previousState)
     },
     off() {
       setState(false)
@@ -103,19 +103,16 @@ export function useObject<T = any>(initialValue: T) {
       setState(n)
     },
 
-    setPartialValue(f: Partial<T> | ((e: T) => Partial<T>)) {
-      const n = (
-        typeof f === "function" ? (f as any)(state) : { ...state, ...f }
-      ) as T
-
-      setState((s) => ({
-        ...s,
-        ...n,
+    setPartialValue(newState: React.SetStateAction<Partial<T>>) {
+      setState((previousState) => ({
+        ...previousState,
+        ...(typeof newState === "function"
+          ? newState(previousState)
+          : newState),
       }))
     },
-    setValue(f: T | ((e: T) => T)) {
-      const n = typeof f === "function" ? (f as any)(state) : f
-      setState(n)
+    setValue(newState: React.SetStateAction<T>) {
+      setState(newState)
     },
     reset() {
       setState(initialValue)
