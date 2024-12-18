@@ -33,3 +33,16 @@ export function omitProperties<T extends object, K extends keyof T>(
 
   return newObj
 }
+
+export const modals = {
+  open(modalId: string) {
+    try {
+      ;(window as any)[modalId].showModal()
+    } catch {}
+  },
+  close(modalId: string) {
+    try {
+      ;(window as any)[modalId].close()
+    } catch {}
+  },
+}
