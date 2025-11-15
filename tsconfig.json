@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "target": "es5",
     "strict": false,
-    "lib": ["es6", "dom", "es2019"],
+    "lib": ["es6", "dom", "es2019", "ES2023"],
     "allowJs": false,
     "jsx": "react",
     "moduleResolution": "node",
