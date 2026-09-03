@@ -1,79 +1,106 @@
-"use client"
-import React, { Suspense, useState, useEffect } from "react"
+"use client";
+import React, { Suspense, useState, useEffect } from "react";
 
-let isServer: boolean
-
+/**
+ * Safely renders children only after the component has mounted on the client.
+ * Eliminates hydration mismatches.
+ */
 export function BrowserOnly({ children }: { children?: React.ReactNode }) {
-  const [ssr, setSSR] = useState(
-    typeof isServer !== "undefined" ? isServer : true
-  )
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (typeof isServer === "undefined") {
-      setSSR(false)
-      isServer = false
-    }
-  }, [])
+    setIsMounted(true);
+  }, []);
 
-  // This will render the fallback in the server
-  return (ssr ? null : children) as JSX.Element
+  if (!isMounted) return null;
+  return <>{children}</>;
 }
 
 /**
- * This can be used inside server components to wrap client only components
+ * Acts as a client boundary for Next.js App Router.
  */
 export function ClientOnly({ children }: { children: React.ReactNode }) {
-  return children as JSX.Element
+  return <>{children}</>;
 }
 
 /**
- * For Next.js pages router
+ * Ensures Suspense fallbacks align during SSR and initial hydration.
  */
-
-let isServer__layout = true
-
-function SSRSuspense({ fallback, children }: any) {
-  const [ssr, setSSR] = useState(isServer__layout)
+function SSRSuspense({
+  fallback,
+  children,
+}: {
+  fallback: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setSSR(false)
-    isServer__layout = false
-  }, [])
+    setIsMounted(true);
+  }, []);
 
-  // This will render the fallback in the server
-  return ssr ? fallback : <Suspense fallback={fallback}>{children}</Suspense>
+  if (!isMounted) return <>{fallback}</>;
+  return <Suspense fallback={fallback}>{children}</Suspense>;
 }
 
-export function WithLayout<L>({
+// --- Next.js Pages Router Layout Types ---
+
+type LayoutProps = Record<string, unknown> & {
+  children: React.ReactNode;
+  Component?: React.ComponentType<any>;
+};
+
+type LayoutComponent = React.ComponentType<LayoutProps>;
+
+export type PageWithLayout<P = {}> = React.ComponentType<P> & {
+  Layout?: LayoutComponent;
+  Loading?: React.ComponentType<any>;
+};
+
+interface WithLayoutProps<P> {
+  Component: PageWithLayout<P>;
+  pageProps?: P;
+  layoutProps?: Record<string, unknown>;
+  loadingProps?: Record<string, unknown>;
+  defaultLayout?: LayoutComponent;
+  defaultLoading?: React.ComponentType<any>;
+  showLayout?: boolean;
+  showLoading?: boolean;
+}
+
+// Static fallbacks defined OUTSIDE the render cycle to prevent unmount thrashing
+const PassthroughLayout: LayoutComponent = ({ children }) => <>{children}</>;
+const NullLoading: React.ComponentType<any> = () => null;
+
+/**
+ * For Next.js Pages router.
+ * Strictly typed and protected against re-render unmounting.
+ */
+export function WithLayout<P extends Record<string, unknown>>({
   Component,
-  pageProps,
-  layoutProps,
-  loadingProps,
-  defaultLayout = ({ children }: any) => children,
-  defaultLoading = () => null,
+  pageProps = {} as P,
+  layoutProps = {},
+  loadingProps = {},
+  defaultLayout = PassthroughLayout,
+  defaultLoading = NullLoading,
   showLayout = true,
   showLoading = true,
-}: {
-  Component?: any
-  pageProps?: any
-  layoutProps?: any
-  loadingProps?: any
-  defaultLayout?: any
-  defaultLoading?: any
-  showLayout?: boolean
-  showLoading?: boolean
-}) {
-  const Layout = Component.Layout || defaultLayout
-  const Loading = Component.Loading || defaultLoading
-
-  const SLayout = showLayout ? Layout : ({ children }: any) => children
-  const SLoading = showLoading ? Loading : () => null
+}: WithLayoutProps<P>) {
+  // Safely resolve the layout and loading components
+  const Layout = showLayout
+    ? (Component.Layout ?? defaultLayout)
+    : PassthroughLayout;
+  const Loading = showLoading
+    ? (Component.Loading ?? defaultLoading)
+    : NullLoading;
 
   return (
-    <SLayout {...{ ...layoutProps, Component }}>
-      <SSRSuspense fallback={<SLoading {...{ ...loadingProps, Component }} />}>
+    <Layout {...layoutProps} Component={Component}>
+      <SSRSuspense
+        fallback={<Loading {...loadingProps} Component={Component} />}
+      >
         <Component {...pageProps} />
       </SSRSuspense>
-    </SLayout>
-  )
+    </Layout>
+  );
 }
