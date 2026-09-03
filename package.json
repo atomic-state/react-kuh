@@ -1,6 +1,6 @@
 {
   "name": "react-kuh",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "Some React kinda useful hooks and components",
   "main": "dist/index.js",
   "keywords": [],
@@ -10,7 +10,6 @@
     "@types/react": "^18.3.3"
   },
   "dependencies": {
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.0"
+    "cn": "^0.2.4"
   }
 }

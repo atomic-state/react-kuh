@@ -1,57 +1,83 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+export { cn } from "cn";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-export function deserialize<T = any>(
+/**
+ * Strict deserialization.
+ * Requires the caller to explicitly type the return, preventing implicit 'any' bugs.
+ */
+export function deserialize<T = unknown>(
   text: string,
-  reviver?: (this: any, key: string, value: any) => any
-) {
+  reviver?: (this: unknown, key: string, value: unknown) => unknown
+): T {
   return JSON.parse(text, reviver) as T;
 }
 
-export function removeUndefinedProperties(obj: any) {
-  return JSON.parse(JSON.stringify(obj));
-}
+/**
+ * Safely and recursively removes undefined properties from objects and arrays.
+ * Preserves Date objects and avoids the JSON.stringify destruction of methods/Sets.
+ */
+export function removeUndefinedProperties<T>(obj: T): T {
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
 
-export function omitProperties<T extends object, K extends keyof T>(
-  obj: T,
-  ...properties: K[]
-): Omit<T, K> {
-  const newObj = {} as Omit<T, K>; // Initialize with the correct omitted type
+  if (obj instanceof Date) {
+    return obj;
+  }
 
-  for (const prop in obj) {
-    // @ts-expect-error
-    if (!properties.includes(prop as K)) {
-      // Safe type check
-      // @ts-expect-error
-      newObj[prop as keyof Omit<T, K>] = obj[prop]; // Assign with the correct type
+  if (Array.isArray(obj)) {
+    return obj.map((item) => removeUndefinedProperties(item)) as unknown as T;
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== undefined) {
+      result[key] = removeUndefinedProperties(value);
     }
   }
 
-  return newObj;
+  return result as T;
 }
 
+/**
+ * Type-safe property omission.
+ */
+export function omitProperties<
+  T extends Record<string, unknown>,
+  K extends keyof T,
+>(obj: T, ...keys: K[]): Omit<T, K> {
+  const result = { ...obj };
+  for (const key of keys) {
+    delete result[key];
+  }
+  return result;
+}
+
+/**
+ * Strict standard-compliant modal controller.
+ * Enforces the use of the native HTML5 <dialog> element.
+ */
 export const modals = {
   open(modalId: string) {
-    try {
-      (window as any)[modalId].showModal();
-    } catch {}
+    const dialog = document.getElementById(modalId);
+    if (dialog instanceof HTMLDialogElement) {
+      dialog.showModal();
+    } else {
+      console.error(
+        `Safe execution failed: Element "${modalId}" is not a <dialog>.`
+      );
+    }
   },
   close(modalId: string) {
-    try {
-      (window as any)[modalId].close();
-    } catch {}
+    const dialog = document.getElementById(modalId);
+    if (dialog instanceof HTMLDialogElement) {
+      dialog.close();
+    }
   },
 };
 
-export const css = (strings: TemplateStringsArray, ...values: any[]) => {
-  const result = [strings[0]];
-  for (let i = 0; i < values.length; i++) {
-    result.push(values[i], strings[i + 1]);
-  }
-  const finalCss = result.join("");
-  return finalCss;
-};
+/**
+ * Safe CSS template literal tag.
+ * Replaces manual looping with native array reduction.
+ */
+export const css = (strings: TemplateStringsArray, ...values: unknown[]) =>
+  strings.reduce((acc, str, i) => acc + str + String(values[i] ?? ""), "");
